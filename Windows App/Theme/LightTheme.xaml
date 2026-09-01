@@ -1,0 +1,55 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Brand accent (same in both themes - this is what makes it feel like "Voxa") -->
+    <Color x:Key="Color.Accent">#5B4CE8</Color>
+    <Color x:Key="Color.AccentAlt">#A855DB</Color>
+    <SolidColorBrush x:Key="Brush.Accent" Color="{StaticResource Color.Accent}" />
+    <SolidColorBrush x:Key="Brush.AccentAlt" Color="{StaticResource Color.AccentAlt}" />
+    <LinearGradientBrush x:Key="Brush.AccentGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="{StaticResource Color.Accent}" Offset="0" />
+        <GradientStop Color="{StaticResource Color.AccentAlt}" Offset="1" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="Brush.AccentSoft" Color="#F1EEFD" />
+    <SolidColorBrush x:Key="Brush.AccentSoftHover" Color="#E6E1FB" />
+    <SolidColorBrush x:Key="Brush.TextOnAccent" Color="#FFFFFF" />
+
+    <!-- Surfaces -->
+    <SolidColorBrush x:Key="Brush.Background" Color="#F3F1FA" />
+    <SolidColorBrush x:Key="Brush.Surface" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="Brush.SurfaceAlt" Color="#FAF9FE" />
+    <SolidColorBrush x:Key="Brush.SurfaceSunken" Color="#F5F4FA" />
+
+    <!-- Borders / dividers -->
+    <SolidColorBrush x:Key="Brush.Border" Color="#E3E1EE" />
+    <SolidColorBrush x:Key="Brush.BorderStrong" Color="#CFCBE2" />
+    <SolidColorBrush x:Key="Brush.Divider" Color="#EAE8F2" />
+
+    <!-- Text -->
+    <SolidColorBrush x:Key="Brush.TextPrimary" Color="#221F33" />
+    <SolidColorBrush x:Key="Brush.TextSecondary" Color="#6C6883" />
+    <SolidColorBrush x:Key="Brush.TextHint" Color="#8E8AA3" />
+    <SolidColorBrush x:Key="Brush.TextDisabled" Color="#B7B4C7" />
+
+    <!-- Controls -->
+    <SolidColorBrush x:Key="Brush.ControlBackground" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="Brush.ControlBorder" Color="#DAD7E8" />
+    <SolidColorBrush x:Key="Brush.ControlBorderHover" Color="#B7ACEE" />
+    <SolidColorBrush x:Key="Brush.SliderTrack" Color="#E4E1F1" />
+    <SolidColorBrush x:Key="Brush.SwitchOff" Color="#D6D3E4" />
+
+    <!-- Semantic -->
+    <SolidColorBrush x:Key="Brush.Success" Color="#2EA04A" />
+    <SolidColorBrush x:Key="Brush.Error" Color="#D32F2F" />
+    <SolidColorBrush x:Key="Brush.SuccessSoft" Color="#E7F6EB" />
+    <SolidColorBrush x:Key="Brush.Warning" Color="#B8860B" />
+    <SolidColorBrush x:Key="Brush.WarningSoft" Color="#FBF3DA" />
+
+    <!-- Shadow (Color, not Brush - DropShadowEffect.Color needs a Color) -->
+    <Color x:Key="Color.CardShadow">#2A221F33</Color>
+
+    <!-- Simple key so XAML can check "is this dark?" indirectly if ever needed -->
+    <sys:Boolean x:Key="Theme.IsDark">False</sys:Boolean>
+
+</ResourceDictionary>

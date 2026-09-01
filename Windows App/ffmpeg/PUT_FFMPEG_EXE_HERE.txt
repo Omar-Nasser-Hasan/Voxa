@@ -1,0 +1,12 @@
+This folder is OPTIONAL. You do not need to put anything here.
+
+The app now finds or downloads FFmpeg automatically the first time it runs (see
+Services/FFmpegBootstrapper.cs and section 2 of README.md at the project root) and
+caches it in the user's own profile - no manual setup needed.
+
+Only place a ffmpeg.exe (and optionally LICENSE.txt) in this folder if you
+specifically want to bundle FFmpeg for a fully offline installer, so the app never
+needs to download anything even on a brand-new machine. See README.md section 2 for
+exactly where to get one.
+
+Expected file, if you choose to add it: ffmpeg.exe

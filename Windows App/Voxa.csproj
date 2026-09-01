@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>Voxa</AssemblyName>
+    <RootNamespace>Voxa</RootNamespace>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>false</SelfContained>
+    <Platforms>x64</Platforms>
+    <Product>Voxa</Product>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <ApplicationIcon>Assets\voxa.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Voxa.LocalTests\**\*.cs" />
+    <None Remove="Voxa.LocalTests\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\voxa-mark.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      OPTIONAL bundled FFmpeg binary. Not required: FFmpegBootstrapper downloads and
+      caches FFmpeg automatically on first launch if no copy is found here, so the
+      app works with zero manual setup even without this file. Only add
+      ffmpeg\ffmpeg.exe (see README.md section 2) if you specifically want a fully
+      offline installer with no first-run download. The Condition means the build
+      won't fail if it's absent either way.
+    -->
+    <Content Include="ffmpeg\ffmpeg.exe" Condition="Exists('ffmpeg\ffmpeg.exe')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="ffmpeg\LICENSE.txt" Condition="Exists('ffmpeg\LICENSE.txt')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

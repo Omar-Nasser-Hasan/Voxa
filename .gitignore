@@ -1,0 +1,17 @@
+# Windows App - build output (any depth)
+**/bin/
+**/obj/
+Windows App/ffmpeg/ffmpeg.exe
+Windows App/ffmpeg-aar-check/classes.jar
+Windows App/installer/Output/
+Windows App/publish/
+Windows App/voxa-logcat.txt
+Windows App/voxa-start-fail-logcat.txt
+
+# Android App
+Android App/Voxa.Android/build/
+Android App/Voxa.Android/app/build/
+Android App/Voxa.Android/.gradle/
+Android App/Voxa.Android/.idea/
+Android App/Voxa.Android/local.properties
+Android App/Voxa.Android/.kotlin/
