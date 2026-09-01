@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using Voxa.Models;
 
@@ -38,7 +39,7 @@ namespace Voxa.Services
 
                 var json = File.ReadAllText(_presetsFilePath);
                 var presets = JsonSerializer.Deserialize<List<Preset>>(json, JsonOptions);
-                return presets ?? new List<Preset>();
+                return (presets ?? new List<Preset>()).Where(p => !p.IsBuiltIn).ToList();
             }
             catch
             {
@@ -50,7 +51,7 @@ namespace Voxa.Services
 
         public void SavePresets(List<Preset> presets)
         {
-            var json = JsonSerializer.Serialize(presets, JsonOptions);
+            var json = JsonSerializer.Serialize(presets.Where(p => !p.IsBuiltIn).ToList(), JsonOptions);
 
             // Write-then-swap avoids leaving a half-written/corrupt file behind
             // if something interrupts the write (e.g. disk full, power loss).

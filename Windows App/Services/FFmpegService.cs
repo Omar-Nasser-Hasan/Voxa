@@ -528,6 +528,13 @@ namespace Voxa.Services
                 args.Add(string.Join(",", filters));
             }
 
+            if (p.WriteMetadata)
+            {
+                AddMetadataArgument(args, "title", p.MetadataTitle);
+                AddMetadataArgument(args, "artist", p.MetadataArtist);
+                AddMetadataArgument(args, "album", p.MetadataAlbum);
+            }
+
             if (!p.KeepOriginalSampleRate && p.SampleRateHz > 0)
             {
                 args.Add("-ar");
@@ -540,9 +547,20 @@ namespace Voxa.Services
             return args;
         }
 
+        private static void AddMetadataArgument(List<string> args, string name, string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value)) return;
+            args.Add("-metadata");
+            args.Add($"{name}={value.Trim()}");
+        }
+
         private static List<string> BuildFilterChain(ProcessingParameters p)
         {
             var filters = new List<string>();
+
+            // Trim first so deliberate padding added later is never removed again.
+            if (p.TrimSilence)
+                filters.Add("silenceremove=start_periods=1:start_duration=0.2:start_threshold=-45dB:stop_periods=1:stop_duration=0.2:stop_threshold=-45dB");
 
             // 1. Clarity enhancement first: cut low rumble, lightly denoise, add a
             //    gentle presence boost around the frequency range that carries speech.

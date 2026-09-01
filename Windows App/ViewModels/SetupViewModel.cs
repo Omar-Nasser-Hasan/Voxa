@@ -31,7 +31,7 @@ namespace Voxa.ViewModels
             set => SetField(ref _isIndeterminate, value);
         }
 
-        private string _statusMessage = "Getting everything ready...";
+        private string _statusMessage = LocalizationService.Instance["Runtime.GettingReady"];
         public string StatusMessage
         {
             get => _statusMessage;

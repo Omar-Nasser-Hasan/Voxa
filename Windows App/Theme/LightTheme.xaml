@@ -3,27 +3,27 @@
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
     <!-- Brand accent (same in both themes - this is what makes it feel like "Voxa") -->
-    <Color x:Key="Color.Accent">#5B4CE8</Color>
-    <Color x:Key="Color.AccentAlt">#A855DB</Color>
+    <Color x:Key="Color.Accent">#635BFF</Color>
+    <Color x:Key="Color.AccentAlt">#8278FF</Color>
     <SolidColorBrush x:Key="Brush.Accent" Color="{StaticResource Color.Accent}" />
     <SolidColorBrush x:Key="Brush.AccentAlt" Color="{StaticResource Color.AccentAlt}" />
     <LinearGradientBrush x:Key="Brush.AccentGradient" StartPoint="0,0" EndPoint="1,1">
         <GradientStop Color="{StaticResource Color.Accent}" Offset="0" />
         <GradientStop Color="{StaticResource Color.AccentAlt}" Offset="1" />
     </LinearGradientBrush>
-    <SolidColorBrush x:Key="Brush.AccentSoft" Color="#F1EEFD" />
-    <SolidColorBrush x:Key="Brush.AccentSoftHover" Color="#E6E1FB" />
+    <SolidColorBrush x:Key="Brush.AccentSoft" Color="#EEEDFF" />
+    <SolidColorBrush x:Key="Brush.AccentSoftHover" Color="#E2E0FF" />
     <SolidColorBrush x:Key="Brush.TextOnAccent" Color="#FFFFFF" />
 
     <!-- Surfaces -->
-    <SolidColorBrush x:Key="Brush.Background" Color="#F3F1FA" />
+    <SolidColorBrush x:Key="Brush.Background" Color="#F7F7FB" />
     <SolidColorBrush x:Key="Brush.Surface" Color="#FFFFFF" />
-    <SolidColorBrush x:Key="Brush.SurfaceAlt" Color="#FAF9FE" />
-    <SolidColorBrush x:Key="Brush.SurfaceSunken" Color="#F5F4FA" />
+    <SolidColorBrush x:Key="Brush.SurfaceAlt" Color="#F8F8FC" />
+    <SolidColorBrush x:Key="Brush.SurfaceSunken" Color="#F4F4F9" />
 
     <!-- Borders / dividers -->
-    <SolidColorBrush x:Key="Brush.Border" Color="#E3E1EE" />
-    <SolidColorBrush x:Key="Brush.BorderStrong" Color="#CFCBE2" />
+    <SolidColorBrush x:Key="Brush.Border" Color="#E7E7EF" />
+    <SolidColorBrush x:Key="Brush.BorderStrong" Color="#D4D3E2" />
     <SolidColorBrush x:Key="Brush.Divider" Color="#EAE8F2" />
 
     <!-- Text -->

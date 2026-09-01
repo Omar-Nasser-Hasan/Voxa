@@ -19,6 +19,7 @@ namespace Voxa.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
+        private static LocalizationService L => LocalizationService.Instance;
         private readonly FFmpegService _ffmpegService;
         private readonly PresetManager _presetManager;
         private readonly BatchHistoryManager _historyManager;
@@ -59,6 +60,7 @@ namespace Voxa.ViewModels
             new(new[] { 8000, 16000, 22050, 32000, 44100, 48000, 96000 });
 
         public bool HasNoFiles => Files.Count == 0;
+        public string QueueCountText => L.Format("Queue.Count", Files.Count);
         public bool HasNoBatchHistory => BatchHistory.Count == 0;
 
         // ---- Waveform preview -------------------------------------------------------
@@ -124,8 +126,8 @@ namespace Voxa.ViewModels
         public bool CanPreviewOutput => SelectedFile?.HasOutputFile == true;
 
         public string PreviewSourceLabel => PreviewOutput && CanPreviewOutput
-            ? "Output preview"
-            : "Input preview";
+            ? LocalizationService.Instance["Preview.OutputSource"]
+            : LocalizationService.Instance["Preview.Input"];
 
         public string SelectedPreviewDisplayName
         {
@@ -163,7 +165,7 @@ namespace Voxa.ViewModels
             set => SetField(ref _playbackTimeText, value);
         }
 
-        public string PlayPauseButtonText => IsPlaybackPlaying ? "Pause" : "Play";
+        public string PlayPauseButtonText => IsPlaybackPlaying ? LocalizationService.Instance["Preview.Pause"] : LocalizationService.Instance["Preview.Play"];
 
         // ---- Processing parameters (flattened onto the VM for easy two-way binding) -
 
@@ -175,6 +177,7 @@ namespace Voxa.ViewModels
             {
                 if (SetField(ref _outputFormat, value))
                     OnPropertyChanged(nameof(FileNamePatternPreview));
+                    OnPropertyChanged(nameof(QueueCountText));
             }
         }
 
@@ -241,6 +244,18 @@ namespace Voxa.ViewModels
             set => SetField(ref _silencePaddingEndSec, value);
         }
 
+        private bool _trimSilence;
+        public bool TrimSilence { get => _trimSilence; set => SetField(ref _trimSilence, value); }
+
+        private bool _writeMetadata;
+        public bool WriteMetadata { get => _writeMetadata; set => SetField(ref _writeMetadata, value); }
+        private string _metadataTitle = string.Empty;
+        public string MetadataTitle { get => _metadataTitle; set => SetField(ref _metadataTitle, value); }
+        private string _metadataArtist = string.Empty;
+        public string MetadataArtist { get => _metadataArtist; set => SetField(ref _metadataArtist, value); }
+        private string _metadataAlbum = string.Empty;
+        public string MetadataAlbum { get => _metadataAlbum; set => SetField(ref _metadataAlbum, value); }
+
         private string _fileNamePattern = "{name}";
         public string FileNamePattern
         {
@@ -277,8 +292,8 @@ namespace Voxa.ViewModels
         /// <summary>Read-only example shown under the naming pattern field, e.g. "my_recording -> Interview_003".</summary>
         public string FileNamePatternPreview =>
             UseCustomFileNames
-                ? $"Example: my_recording.wav -> {OutputNamer.PreviewExample(FileNamePattern, SequenceStart)}.{OutputFormat}"
-                : $"Example: my_recording.wav -> my_recording.{OutputFormat}";
+                ? L.Format("Names.Preview", OutputNamer.PreviewExample(FileNamePattern, SequenceStart), OutputFormat)
+                : L.Format("Names.OriginalPreview", OutputFormat);
 
         // ---- Presets -----------------------------------------------------------------
 
@@ -327,7 +342,7 @@ namespace Voxa.ViewModels
             set => SetField(ref _overallProgress, value);
         }
 
-        private string _statusText = "Add some audio files to get started.";
+        private string _statusText = string.Empty;
         public string StatusText
         {
             get => _statusText;
@@ -416,6 +431,7 @@ namespace Voxa.ViewModels
             _ffmpegService = ffmpegService;
             _presetManager = presetManager;
             _historyManager = historyManager;
+            StatusText = L["Runtime.NoFiles"];
 
             _playbackTimer = new DispatcherTimer
             {
@@ -424,13 +440,32 @@ namespace Voxa.ViewModels
             _playbackTimer.Tick += (_, _) => RefreshPlaybackPosition();
             _previewPlayer.MediaEnded += (_, _) => FinishPreviewPlayback();
 
+            foreach (var preset in PresetCatalog.CreateBuiltInPresets())
+                Presets.Add(preset);
+
             foreach (var preset in _presetManager.LoadPresets())
                 Presets.Add(preset);
+
+            LocalizationService.Instance.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == "Item[]")
+                {
+                    OnPropertyChanged(nameof(FileNamePatternPreview));
+                    OnPropertyChanged(nameof(PreviewSourceLabel));
+                    OnPropertyChanged(nameof(PlayPauseButtonText));
+                    foreach (var file in Files) file.RefreshLocalizedStatus();
+                    foreach (var preset in Presets) preset.RefreshDisplayName();
+                }
+            };
 
             foreach (var entry in _historyManager.LoadHistory())
                 BatchHistory.Add(entry);
 
-            Files.CollectionChanged += (_, __) => OnPropertyChanged(nameof(HasNoFiles));
+            Files.CollectionChanged += (_, __) =>
+            {
+                OnPropertyChanged(nameof(HasNoFiles));
+                OnPropertyChanged(nameof(QueueCountText));
+            };
             BatchHistory.CollectionChanged += (_, __) => OnPropertyChanged(nameof(HasNoBatchHistory));
 
             AddFilesCommand = new RelayCommand(_ => AddFilesViaDialog());
@@ -452,7 +487,7 @@ namespace Voxa.ViewModels
                 // Shouldn't normally happen - SetupWindow already confirmed FFmpeg was
                 // ready before this window ever opened. Covers the rare case of something
                 // removing the cached copy mid-session (e.g. antivirus quarantine).
-                StatusText = "Warning: the audio engine (FFmpeg) is missing. Restart the app to have it set itself up again.";
+                StatusText = "Warning: FFmpeg is missing. Restart the app to set it up again.";
             }
 
             // Fire-and-forget: never awaited, never blocks the UI from opening, and
@@ -500,11 +535,11 @@ namespace Voxa.ViewModels
             }
 
             if (added > 0 && skipped > 0)
-                StatusText = $"Added {added} file(s). Skipped {skipped} unsupported file(s).";
+                StatusText = L.Format("Runtime.AddedSkipped", added, skipped);
             else if (added > 0)
-                StatusText = $"Added {added} file(s). Ready when you are.";
+                StatusText = L.Format("Runtime.Added", added);
             else if (skipped > 0)
-                StatusText = "Those files aren't in a supported audio format.";
+                StatusText = L["Runtime.Unsupported"];
         }
 
         // Number of bars drawn in the waveform preview - enough detail to look like a
@@ -649,6 +684,11 @@ namespace Voxa.ViewModels
             BitrateKbps = BitrateKbps,
             SilencePaddingStartSec = SilencePaddingStartSec,
             SilencePaddingEndSec = SilencePaddingEndSec,
+            TrimSilence = TrimSilence,
+            WriteMetadata = WriteMetadata,
+            MetadataTitle = MetadataTitle,
+            MetadataArtist = MetadataArtist,
+            MetadataAlbum = MetadataAlbum,
             FileNamePattern = FileNamePattern,
             UseCustomFileNames = UseCustomFileNames,
             SequenceStart = SequenceStart
@@ -667,10 +707,14 @@ namespace Voxa.ViewModels
             BitrateKbps = p.BitrateKbps;
             SilencePaddingStartSec = p.SilencePaddingStartSec;
             SilencePaddingEndSec = p.SilencePaddingEndSec;
+            TrimSilence = p.TrimSilence;
+            WriteMetadata = p.WriteMetadata;
+            MetadataTitle = p.MetadataTitle;
+            MetadataArtist = p.MetadataArtist;
+            MetadataAlbum = p.MetadataAlbum;
             UseCustomFileNames = p.UseCustomFileNames;
             FileNamePattern = string.IsNullOrWhiteSpace(p.FileNamePattern) ? "{name}" : p.FileNamePattern;
             SequenceStart = p.SequenceStart;
-            StatusText = $"Loaded preset '{preset.Name}'.";
         }
 
         private void SavePreset()
@@ -775,13 +819,13 @@ namespace Voxa.ViewModels
         {
             if (Files.Count == 0)
             {
-                StatusText = "Add some audio files first.";
+                StatusText = L["Runtime.NoFiles"];
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(OutputFolder))
             {
-                StatusText = "Choose an output folder first.";
+                StatusText = L["Runtime.NoFolder"];
                 MessageBox.Show("Please choose an output folder before starting.", "Output folder needed",
                     MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
@@ -848,7 +892,7 @@ namespace Voxa.ViewModels
             {
                 file.Status = ProcessingStatus.Pending;
                 file.Progress = 0;
-                file.StatusMessage = "Waiting";
+                file.StatusMessage = L["Runtime.Waiting"];
                 file.OutputFilePath = null;
             }
 
@@ -887,7 +931,7 @@ namespace Voxa.ViewModels
                 if (_cts!.Token.IsCancellationRequested)
                 {
                     file.Status = ProcessingStatus.Skipped;
-                    file.StatusMessage = "Cancelled";
+                    file.StatusMessage = L["Runtime.Cancelled"];
                     Interlocked.Increment(ref skippedCount);
                     Interlocked.Increment(ref processedCount);
                     ReportProgressSafe();
@@ -897,7 +941,7 @@ namespace Voxa.ViewModels
                 if (!File.Exists(file.FilePath))
                 {
                     file.Status = ProcessingStatus.Skipped;
-                    file.StatusMessage = "File no longer exists - skipped";
+                    file.StatusMessage = L["Runtime.FileMissing"];
                     Interlocked.Increment(ref skippedCount);
                     Interlocked.Increment(ref processedCount);
                     ReportProgressSafe();
@@ -905,7 +949,7 @@ namespace Voxa.ViewModels
                 }
 
                 file.Status = ProcessingStatus.Processing;
-                file.StatusMessage = "Processing...";
+                file.StatusMessage = L["Runtime.Processing"];
 
                 var sequenceNumber = sequenceNumbers[file];
                 var desiredBaseName = parameters.UseCustomFileNames
@@ -988,7 +1032,7 @@ namespace Voxa.ViewModels
                 catch (OperationCanceledException)
                 {
                     file.Status = ProcessingStatus.Skipped;
-                    file.StatusMessage = "Cancelled";
+                    file.StatusMessage = L["Runtime.Cancelled"];
                     Interlocked.Increment(ref skippedCount);
                 }
                 catch (Exception ex)
@@ -1007,7 +1051,7 @@ namespace Voxa.ViewModels
                 ReportProgressSafe();
 
                 var doneSoFar = Interlocked.CompareExchange(ref processedCount, 0, 0);
-                StatusText = $"Processed {doneSoFar} of {total} file(s)...";
+                StatusText = L.Format("Runtime.Processed", doneSoFar, total);
             }
 
             using (var gate = new SemaphoreSlim(MaxParallelFiles))
@@ -1044,7 +1088,7 @@ namespace Voxa.ViewModels
             var wasCancelled = _cts.Token.IsCancellationRequested;
             IsProcessing = false;
             EtaText = string.Empty;
-            StatusText = $"Finished: {completedCount} succeeded, {failedCount} failed, {skippedCount} skipped.";
+            StatusText = L.Format("Runtime.Finished", completedCount, failedCount, skippedCount);
 
             CompletionHasFailures = failedCount > 0;
             CompletionSummary = failedCount > 0
@@ -1091,7 +1135,7 @@ namespace Voxa.ViewModels
             }
 
             var remaining = TimeSpan.FromSeconds(avgPerFile * remainingFiles);
-            EtaText = remaining.TotalSeconds < 1 ? "Almost done" : $"About {FormatTimeSpan(remaining)} remaining";
+            EtaText = remaining.TotalSeconds < 1 ? L["Runtime.AlmostFinished"] : L.Format("Runtime.Remaining", FormatTimeSpan(remaining));
         }
 
         private static string FormatTimeSpan(TimeSpan ts)
@@ -1235,7 +1279,7 @@ namespace Voxa.ViewModels
         private void CancelProcessing()
         {
             _cts?.Cancel();
-            StatusText = "Cancelling... finishing the current file.";
+            StatusText = L["Runtime.Cancelling"];
         }
 
         /// <summary>Called from MainWindow's Closing handler if the user quits mid-batch.</summary>

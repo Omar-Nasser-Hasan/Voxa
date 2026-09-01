@@ -27,6 +27,7 @@ namespace Voxa
         }
 
         private void ThemeToggle_Click(object sender, RoutedEventArgs e) => ThemeService.Toggle();
+        private void LanguageToggle_Click(object sender, RoutedEventArgs e) => LocalizationService.Instance.ToggleLanguage();
 
         // Sun in light mode (tap to go dark), moon in dark mode (tap to go light).
         private void UpdateThemeButtonIcon(bool isDark) =>
@@ -55,7 +56,7 @@ namespace Voxa
         {
             if (string.IsNullOrWhiteSpace(_viewModel.OutputFolder) || !Directory.Exists(_viewModel.OutputFolder))
             {
-                MessageBox.Show("Choose an output folder first.", "No folder yet",
+                MessageBox.Show(LocalizationService.Instance["Dialog.NoFolder.Body"], LocalizationService.Instance["Dialog.NoFolder.Title"],
                     MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
@@ -101,8 +102,8 @@ namespace Voxa
             if (!_viewModel.IsProcessing) return;
 
             var result = MessageBox.Show(
-                "Files are still processing. Are you sure you want to quit? The current file may be left incomplete.",
-                "Processing in progress",
+                LocalizationService.Instance["Dialog.Quit.Body"],
+                LocalizationService.Instance["Dialog.Quit.Title"],
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
 

@@ -19,6 +19,7 @@ namespace Voxa
             // Apply the user's saved Light/Dark preference before any window is created
             // so nothing flashes in the wrong theme on startup.
             ThemeService.ApplyStartupTheme();
+            LocalizationService.Instance.Initialize();
 
             // Don't exit just because the first window (setup) closes - SetupWindow closes
             // itself the moment MainWindow opens, and we don't want that to look like "last
@@ -33,8 +34,8 @@ namespace Voxa
         private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             MessageBox.Show(
-                $"Something went wrong and the last action couldn't finish:\n\n{e.Exception.Message}",
-                "Unexpected error",
+                LocalizationService.Instance.Format("Dialog.Unexpected.Body", Environment.NewLine, e.Exception.Message),
+                LocalizationService.Instance["Dialog.Unexpected.Title"],
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
             e.Handled = true;
@@ -45,8 +46,8 @@ namespace Voxa
             if (e.ExceptionObject is Exception ex)
             {
                 MessageBox.Show(
-                    $"A fatal error occurred and the application needs to close:\n\n{ex.Message}",
-                    "Fatal error",
+                    LocalizationService.Instance.Format("Dialog.Fatal.Body", Environment.NewLine, ex.Message),
+                    LocalizationService.Instance["Dialog.Fatal.Title"],
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }

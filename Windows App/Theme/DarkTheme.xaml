@@ -16,10 +16,10 @@
     <SolidColorBrush x:Key="Brush.TextOnAccent" Color="#FFFFFF" />
 
     <!-- Surfaces -->
-    <SolidColorBrush x:Key="Brush.Background" Color="#17151F" />
-    <SolidColorBrush x:Key="Brush.Surface" Color="#1F1C2B" />
-    <SolidColorBrush x:Key="Brush.SurfaceAlt" Color="#252134" />
-    <SolidColorBrush x:Key="Brush.SurfaceSunken" Color="#14121C" />
+    <SolidColorBrush x:Key="Brush.Background" Color="#15151C" />
+    <SolidColorBrush x:Key="Brush.Surface" Color="#1E1E28" />
+    <SolidColorBrush x:Key="Brush.SurfaceAlt" Color="#252532" />
+    <SolidColorBrush x:Key="Brush.SurfaceSunken" Color="#181821" />
 
     <!-- Borders / dividers -->
     <SolidColorBrush x:Key="Brush.Border" Color="#332F45" />
@@ -27,9 +27,9 @@
     <SolidColorBrush x:Key="Brush.Divider" Color="#2B2739" />
 
     <!-- Text -->
-    <SolidColorBrush x:Key="Brush.TextPrimary" Color="#F1EFFA" />
-    <SolidColorBrush x:Key="Brush.TextSecondary" Color="#A6A1C2" />
-    <SolidColorBrush x:Key="Brush.TextHint" Color="#8A85A8" />
+    <SolidColorBrush x:Key="Brush.TextPrimary" Color="#FAFAFF" />
+    <SolidColorBrush x:Key="Brush.TextSecondary" Color="#C2C0D4" />
+    <SolidColorBrush x:Key="Brush.TextHint" Color="#9D9AAD" />
     <SolidColorBrush x:Key="Brush.TextDisabled" Color="#5C5876" />
 
     <!-- Controls -->

@@ -39,6 +39,15 @@ namespace Voxa.Models
         /// <summary>Seconds of silence added to the very end of each output file. 0 = none.</summary>
         public double SilencePaddingEndSec { get; set; } = 0;
 
+        /// <summary>Removes sustained quiet audio at the beginning and end of each source file.</summary>
+        public bool TrimSilence { get; set; } = false;
+
+        /// <summary>When enabled, the same tags are written to each processed file.</summary>
+        public bool WriteMetadata { get; set; } = false;
+        public string MetadataTitle { get; set; } = string.Empty;
+        public string MetadataArtist { get; set; } = string.Empty;
+        public string MetadataAlbum { get; set; } = string.Empty;
+
         /// <summary>
         /// Output filename pattern. Supports the tokens {name} (original filename, no
         /// extension), {n} (sequence number, no padding), {n2}/{n3}/{n4} (zero-padded

@@ -87,13 +87,13 @@ namespace Voxa.Services
             progress.Report(new SetupProgress
             {
                 Stage = SetupStage.Checking,
-                Message = "Checking for the audio engine...",
+                Message = LocalizationService.Instance["Runtime.Checking"],
                 IsIndeterminate = true
             });
 
             if (IsAlreadyAvailable())
             {
-                progress.Report(new SetupProgress { Stage = SetupStage.Ready, Percent = 100, Message = "Ready." });
+                progress.Report(new SetupProgress { Stage = SetupStage.Ready, Percent = 100, Message = LocalizationService.Instance["Runtime.Ready"] });
                 return;
             }
 
@@ -103,7 +103,7 @@ namespace Voxa.Services
                 try
                 {
                     await DownloadAndInstallAsync(url, progress, ct).ConfigureAwait(false);
-                    progress.Report(new SetupProgress { Stage = SetupStage.Ready, Percent = 100, Message = "Ready." });
+                    progress.Report(new SetupProgress { Stage = SetupStage.Ready, Percent = 100, Message = LocalizationService.Instance["Runtime.Ready"] });
                     return;
                 }
                 catch (OperationCanceledException)
@@ -116,7 +116,7 @@ namespace Voxa.Services
                 }
             }
 
-            progress.Report(new SetupProgress { Stage = SetupStage.Failed, Message = "Setup failed." });
+            progress.Report(new SetupProgress { Stage = SetupStage.Failed, Message = LocalizationService.Instance["Runtime.SetupFailed"] });
             var reason = lastError != null ? $" ({lastError.Message})" : string.Empty;
             throw new FFmpegSetupException(
                 "Couldn't download the audio engine this app needs (FFmpeg)." + reason +
@@ -134,7 +134,7 @@ namespace Voxa.Services
             {
                 await DownloadToFileAsync(url, tempZip, progress, ct).ConfigureAwait(false);
 
-                progress.Report(new SetupProgress { Stage = SetupStage.Extracting, Percent = 88, Message = "Unpacking..." });
+                progress.Report(new SetupProgress { Stage = SetupStage.Extracting, Percent = 88, Message = LocalizationService.Instance["Runtime.Unpacking"] });
                 Directory.CreateDirectory(tempExtract);
                 ZipFile.ExtractToDirectory(tempZip, tempExtract, overwriteFiles: true);
 
@@ -144,7 +144,7 @@ namespace Voxa.Services
                 if (extractedExe == null)
                     throw new InvalidOperationException("The downloaded package didn't contain ffmpeg.exe.");
 
-                progress.Report(new SetupProgress { Stage = SetupStage.Installing, Percent = 96, Message = "Almost done..." });
+                progress.Report(new SetupProgress { Stage = SetupStage.Installing, Percent = 96, Message = LocalizationService.Instance["Runtime.AlmostDone"] });
                 File.Copy(extractedExe, CachedFFmpegPath, overwrite: true);
 
                 var licenseSource =
@@ -245,8 +245,7 @@ namespace Voxa.Services
                             {
                                 Stage = SetupStage.Downloading,
                                 Percent = pct,
-                                Message = $"Downloading audio engine (first-time setup)... " +
-                                          $"{readTotal / 1024.0 / 1024.0:0.#} MB of {totalBytes / 1024.0 / 1024.0:0.#} MB"
+                                Message = $"{LocalizationService.Instance.Format("Runtime.Downloading", readTotal / 1024.0 / 1024.0)} of {totalBytes / 1024.0 / 1024.0:0.#} MB"
                             });
                         }
                         else
@@ -255,7 +254,7 @@ namespace Voxa.Services
                             {
                                 Stage = SetupStage.Downloading,
                                 IsIndeterminate = true,
-                                Message = $"Downloading audio engine (first-time setup)... {readTotal / 1024.0 / 1024.0:0.#} MB"
+                                Message = LocalizationService.Instance.Format("Runtime.Downloading", readTotal / 1024.0 / 1024.0)
                             });
                         }
                     }

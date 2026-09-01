@@ -34,15 +34,11 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-DefaultDirName={autopf}\{#MyAppName}
+DefaultDirName={localappdata}\Programs\{#MyAppName}
 DefaultGroupName={#MyAppName}
-; Per-machine by default (Program Files, needs admin once at install time) so
-; every user on a shared PC can launch it from the Start Menu. Switch both
-; lines below to build a per-user installer instead (no admin prompt, installs
-; to the current user's AppData\Local\Programs instead):
-;   PrivilegesRequired=lowest
-;   DefaultDirName={autopf}\{#MyAppName}  ->  {localappdata}\Programs\{#MyAppName}
-PrivilegesRequired=admin
+; Per-user install: no elevation prompt, so it works for standard Windows
+; accounts and installs only for the current person under their local profile.
+PrivilegesRequired=lowest
 OutputDir=Output
 OutputBaseFilename=VoxaSetup
 ; Points at the source Assets folder (not the publish output) since voxa.ico is

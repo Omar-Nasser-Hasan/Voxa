@@ -108,6 +108,31 @@ Run("Parameter validation catches bad values", () =>
     Assert(errors.Count >= 6, $"Expected several validation errors, got {errors.Count}.");
 });
 
+Run("Silence trimming and metadata are passed to FFmpeg", () =>
+{
+    var args = FFmpegService.BuildArgumentList(tonePath, Path.Combine(outputDir, "tagged.mp3"), new ProcessingParameters
+    {
+        OutputFormat = "mp3",
+        TrimSilence = true,
+        WriteMetadata = true,
+        MetadataTitle = "Episode 1",
+        MetadataArtist = "Voxa Test",
+        MetadataAlbum = "Launch"
+    });
+    Assert(args.Any(a => a.Contains("silenceremove=", StringComparison.Ordinal)), "Silence trimming filter was not added.");
+    Assert(args.Contains("title=Episode 1"), "Title tag was not added.");
+    Assert(args.Contains("artist=Voxa Test"), "Artist tag was not added.");
+    Assert(args.Contains("album=Launch"), "Album tag was not added.");
+});
+
+Run("Built-in launch presets are available", () =>
+{
+    var presets = PresetCatalog.CreateBuiltInPresets().ToList();
+    Assert(presets.Count == 2 && presets.All(p => p.IsBuiltIn), "Expected the two built-in launch presets.");
+    Assert(presets.Any(p => p.LocalizationKey == "Preset.Podcast"), "Podcast preset is missing.");
+    Assert(presets.Any(p => p.Parameters.TrimSilence), "Voice Note preset should trim silence.");
+});
+
 Run("Waveform control renders repeated progress updates", () =>
 {
     Exception? threadError = null;
@@ -244,6 +269,19 @@ Run("Installer exists and packages publish folder by script", () =>
     var script = File.ReadAllText(scriptPath);
     Assert(script.Contains(@"Source: ""{#PublishDir}\*""", StringComparison.Ordinal), "Installer script does not include the publish folder recursively.");
     Assert(script.Contains("recursesubdirs", StringComparison.OrdinalIgnoreCase), "Installer script does not recurse through publish output.");
+    Assert(script.Contains("PrivilegesRequired=lowest", StringComparison.OrdinalIgnoreCase), "Installer must support standard non-admin accounts.");
+    Assert(script.Contains("DefaultDirName={localappdata}\\Programs", StringComparison.OrdinalIgnoreCase), "Installer must use a per-user install directory.");
+});
+
+Run("Release version is consistent", () =>
+{
+    var project = File.ReadAllText(Path.Combine(root, "Voxa.csproj"));
+    var updater = File.ReadAllText(Path.Combine(root, "Services", "UpdateChecker.cs"));
+    var installer = File.ReadAllText(Path.Combine(root, "installer", "Voxa.iss"));
+    Assert(project.Contains("<AssemblyVersion>1.0.0.0</AssemblyVersion>", StringComparison.Ordinal), "Assembly version drifted.");
+    Assert(project.Contains("<FileVersion>1.0.0.0</FileVersion>", StringComparison.Ordinal), "File version drifted.");
+    Assert(updater.Contains("new(1, 0, 0)", StringComparison.Ordinal), "Update-check version drifted.");
+    Assert(installer.Contains("#define MyAppVersion \"1.0.0\"", StringComparison.Ordinal), "Installer version drifted.");
 });
 
 Run("FFmpeg bundling status is understood", () =>

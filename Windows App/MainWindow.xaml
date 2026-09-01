@@ -3,13 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:Voxa.Controls"
         xmlns:conv="clr-namespace:Voxa.Converters"
+        xmlns:loc="clr-namespace:Voxa.Services"
         Title="Voxa"
-        Height="780" Width="1120" MinHeight="660" MinWidth="960"
+        Height="820" Width="1200" MinHeight="700" MinWidth="1040"
         AllowDrop="True"
         Drop="Window_Drop"
         DragOver="Window_DragOver"
         Closing="Window_Closing"
         FontFamily="Segoe UI"
+        FlowDirection="{Binding FlowDirection, Source={x:Static loc:LocalizationService.Instance}}"
+        Foreground="{DynamicResource Brush.TextPrimary}"
         Background="{DynamicResource Brush.Background}">
 
     <Window.Resources>
@@ -19,7 +22,7 @@
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
     </Window.Resources>
 
-    <Grid Margin="20">
+    <Grid Margin="28">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -28,14 +31,14 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <Grid Grid.Row="0" Margin="4,0,4,16">
+        <Grid Grid.Row="0" Margin="4,0,4,20">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="0" Width="40" Height="40" CornerRadius="10" Margin="0,0,12,0">
+            <Border Grid.Column="0" Width="44" Height="44" CornerRadius="13" Margin="0,0,14,0">
                 <Border.Background>
                     <ImageBrush ImageSource="Assets/voxa-mark.png" Stretch="Uniform" />
                 </Border.Background>
@@ -43,15 +46,17 @@
 
             <StackPanel Grid.Column="1" VerticalAlignment="Center">
                 <TextBlock Text="Voxa" Style="{StaticResource HeaderText}" />
-                <TextBlock Text="Convert, resample, adjust volume and speed, and clean up audio - in bulk."
+                <TextBlock Text="{Binding [App.Tagline], Source={x:Static loc:LocalizationService.Instance}}"
                            Style="{StaticResource SubHeaderText}" Margin="0,1,0,0" />
             </StackPanel>
 
             <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
                 <TextBlock Text="{Binding AppVersionText}" FontSize="11" Margin="0,0,10,0"
                            VerticalAlignment="Center" Foreground="{DynamicResource Brush.TextSecondary}" />
+                <Button Content="{Binding [Language.Toggle], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource SecondaryButton}"
+                        Click="LanguageToggle_Click" Margin="0,0,8,0" />
                 <Button x:Name="ThemeToggleButton" Style="{StaticResource IconToggleButton}"
-                        Click="ThemeToggle_Click" ToolTip="Switch between light and dark"
+                        Click="ThemeToggle_Click" ToolTip="{Binding [Theme.Toggle], Source={x:Static loc:LocalizationService.Instance}}"
                         VerticalAlignment="Center" Content="&#127769;" />
             </StackPanel>
         </Grid>
@@ -80,15 +85,15 @@
                     </Border>
 
                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                        <TextBlock Text="Update available" FontWeight="SemiBold" FontSize="14"
+                        <TextBlock Text="{Binding [Update.Available], Source={x:Static loc:LocalizationService.Instance}}" FontWeight="SemiBold" FontSize="14"
                                    Foreground="{DynamicResource Brush.TextPrimary}" />
                         <TextBlock Text="{Binding UpdateBannerText}" Style="{StaticResource SubHeaderText}"
                                    Margin="0,2,0,0" TextWrapping="Wrap" />
                     </StackPanel>
 
-                    <Button Grid.Column="2" Content="View" Style="{StaticResource SecondaryButton}"
+                    <Button Grid.Column="2" Content="{Binding [View], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource SecondaryButton}"
                             Margin="12,0,8,0" Command="{Binding OpenUpdatePageCommand}" />
-                    <Button Grid.Column="3" Content="Dismiss" Style="{StaticResource SecondaryButton}"
+                    <Button Grid.Column="3" Content="{Binding [Dismiss], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource SecondaryButton}"
                             Command="{Binding DismissUpdateBannerCommand}" />
                 </Grid>
             </Border>
@@ -122,13 +127,13 @@
                     </Border>
 
                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                        <TextBlock Text="Batch complete" FontWeight="SemiBold" FontSize="14"
+                        <TextBlock Text="{Binding [Batch.Complete], Source={x:Static loc:LocalizationService.Instance}}" FontWeight="SemiBold" FontSize="14"
                                    Foreground="{DynamicResource Brush.TextPrimary}" />
                         <TextBlock Text="{Binding CompletionSummary}" Style="{StaticResource SubHeaderText}"
                                    Margin="0,2,0,0" TextWrapping="Wrap" />
                     </StackPanel>
 
-                    <Button Grid.Column="2" Content="Dismiss" Style="{StaticResource SecondaryButton}"
+                    <Button Grid.Column="2" Content="{Binding [Dismiss], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource SecondaryButton}"
                             Margin="12,0,0,0" Command="{Binding DismissCompletionCommand}" />
                 </Grid>
             </Border>
@@ -138,13 +143,13 @@
         <!-- Main content -->
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1.3*" />
-                <ColumnDefinition Width="16" />
-                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1.45*" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="0.95*" />
             </Grid.ColumnDefinitions>
 
             <!-- Left: file queue -->
-            <Border Grid.Column="0" Style="{StaticResource Card}" Margin="4,0,0,0">
+            <Border Grid.Column="0" Style="{StaticResource Card}" Margin="4,0,0,0" Padding="22">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -153,24 +158,29 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0" Text="Files" Style="{StaticResource CardHeaderText}" Margin="0,0,0,10" />
+                    <Grid Grid.Row="0" Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding [Files], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource CardHeaderText}" Margin="0" />
+                        <TextBlock Grid.Column="1" Text="{Binding QueueCountText}" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Brush.TextHint}" VerticalAlignment="Center" />
+                    </Grid>
 
-                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10"
+                    <WrapPanel Grid.Row="1" Margin="0,0,0,14"
                                 IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBooleanConverter}}">
-                        <Button Content="Add Files..." Style="{StaticResource SecondaryButton}" Command="{Binding AddFilesCommand}" />
-                        <Button Content="Add Folder..." Style="{StaticResource SecondaryButton}" Command="{Binding AddFolderCommand}" />
-                        <Button Content="Remove Selected" Style="{StaticResource SecondaryButton}" Click="RemoveSelected_Click" />
-                        <Button Content="Clear All" Style="{StaticResource SecondaryButton}" Command="{Binding ClearFilesCommand}" />
-                    </StackPanel>
+                        <Button Content="{Binding [AddFiles], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource SecondaryButton}" Command="{Binding AddFilesCommand}" />
+                        <Button Content="{Binding [AddFolder], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource SecondaryButton}" Command="{Binding AddFolderCommand}" />
+                        <Button Content="{Binding [RemoveSelected], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource SecondaryButton}" Click="RemoveSelected_Click" />
+                        <Button Content="{Binding [ClearAll], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource SecondaryButton}" Command="{Binding ClearFilesCommand}" />
+                    </WrapPanel>
 
                     <Border Grid.Row="2" Background="{DynamicResource Brush.SurfaceSunken}"
-                            BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1" CornerRadius="10">
+                            BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1" CornerRadius="12">
                         <Grid>
                             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
                                         Visibility="{Binding HasNoFiles, Converter={StaticResource BoolToVis}}">
                                 <TextBlock Text="&#127925;" FontSize="28" HorizontalAlignment="Center"
                                            Foreground="{DynamicResource Brush.TextDisabled}" />
-                                <TextBlock Text="Drag and drop audio files or folders here"
+                                <TextBlock Text="{Binding [DropFiles], Source={x:Static loc:LocalizationService.Instance}}"
                                            HorizontalAlignment="Center" FontSize="13" Margin="0,8,0,0"
                                            Foreground="{DynamicResource Brush.TextHint}" />
                             </StackPanel>
@@ -190,8 +200,10 @@
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
-                                        <GridViewColumn Header="File" Width="230" DisplayMemberBinding="{Binding FileName}" />
-                                        <GridViewColumn Header="Status" Width="110">
+                                        <GridViewColumn Header="{Binding [Column.File], Source={x:Static loc:LocalizationService.Instance}}" Width="230">
+                                            <GridViewColumn.CellTemplate><DataTemplate><TextBlock Text="{Binding FileName}" FlowDirection="LeftToRight" TextAlignment="Left" /></DataTemplate></GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="{Binding [Column.Status], Source={x:Static loc:LocalizationService.Instance}}" Width="110">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <TextBlock Text="{Binding StatusDisplay}"
@@ -200,7 +212,7 @@
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
-                                        <GridViewColumn Header="Details" Width="230">
+                                        <GridViewColumn Header="{Binding [Column.Details], Source={x:Static loc:LocalizationService.Instance}}" Width="230">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <TextBlock Text="{Binding StatusMessage}"
@@ -209,7 +221,7 @@
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
-                                        <GridViewColumn Header="Progress" Width="90">
+                                        <GridViewColumn Header="{Binding [Column.Progress], Source={x:Static loc:LocalizationService.Instance}}" Width="90">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <ProgressBar Width="70" Height="8" Minimum="0" Maximum="100"
@@ -244,12 +256,12 @@
                                                Foreground="{DynamicResource Brush.TextSecondary}" />
                                 </StackPanel>
 
-                                <CheckBox Grid.Column="1" Content="Output" Margin="12,0,12,0"
+                                <CheckBox Grid.Column="1" Content="{Binding [Preview.Output], Source={x:Static loc:LocalizationService.Instance}}" Margin="12,0,12,0"
                                           VerticalAlignment="Center"
                                           IsChecked="{Binding PreviewOutput}"
                                           IsEnabled="{Binding CanPreviewOutput}" />
 
-                                <TextBlock Grid.Column="2" Text="Loading waveform..." FontSize="12" HorizontalAlignment="Right"
+                                <TextBlock Grid.Column="2" Text="{Binding [Preview.Loading], Source={x:Static loc:LocalizationService.Instance}}" FontSize="12" HorizontalAlignment="Right"
                                            VerticalAlignment="Center"
                                            Foreground="{DynamicResource Brush.TextHint}"
                                            Visibility="{Binding IsWaveformLoading, Converter={StaticResource BoolToVis}}" />
@@ -288,35 +300,37 @@
             </Border>
 
             <!-- Right: parameters, presets, output -->
-            <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto" Margin="0,0,4,0">
-                <StackPanel IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBooleanConverter}}">
+            <Border Grid.Column="2" Background="{DynamicResource Brush.SurfaceAlt}" BorderBrush="{DynamicResource Brush.Border}"
+                    BorderThickness="1" CornerRadius="16" Padding="10">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="2">
+                    <StackPanel IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBooleanConverter}}">
 
-                    <Border Style="{StaticResource Card}">
+                    <Border Style="{StaticResource InspectorCard}">
                         <StackPanel>
-                            <TextBlock Text="Output format" Style="{StaticResource CardHeaderText}" />
+                            <TextBlock Text="{Binding [OutputFormat.Title], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource CardHeaderText}" />
                             <ComboBox ItemsSource="{Binding AvailableFormats}" SelectedItem="{Binding OutputFormat}" />
                             <TextBlock Style="{StaticResource HintText}"
-                                       Text="The file type every processed audio file will be saved as." />
+                                       Text="{Binding [OutputFormat.Hint], Source={x:Static loc:LocalizationService.Instance}}" />
                         </StackPanel>
                     </Border>
 
-                    <Border Style="{StaticResource Card}">
+                    <Border Style="{StaticResource InspectorCard}">
                         <StackPanel>
-                            <TextBlock Text="Sample rate" Style="{StaticResource CardHeaderText}" />
-                            <CheckBox Content="Keep each file's original sample rate"
+                            <TextBlock Text="{Binding [SampleRate.Title], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource CardHeaderText}" />
+                            <CheckBox Content="{Binding [SampleRate.Keep], Source={x:Static loc:LocalizationService.Instance}}"
                                       IsChecked="{Binding KeepOriginalSampleRate}" Margin="0,0,0,10" />
                             <ComboBox ItemsSource="{Binding CommonSampleRates}"
                                       Text="{Binding SampleRateHz, UpdateSourceTrigger=PropertyChanged}"
                                       IsEditable="True"
                                       IsEnabled="{Binding KeepOriginalSampleRate, Converter={StaticResource InverseBooleanConverter}}" />
                             <TextBlock Style="{StaticResource HintText}"
-                                       Text="How many times per second audio is measured, in Hz. Higher is clearer but larger; 44100 or 48000 Hz is standard, 16000 Hz is common for speech/transcription." />
+                                       Text="{Binding [SampleRate.Hint], Source={x:Static loc:LocalizationService.Instance}}" />
                         </StackPanel>
                     </Border>
 
-                    <Border Style="{StaticResource Card}">
+                    <Border Style="{StaticResource InspectorCard}">
                         <StackPanel>
-                            <TextBlock Text="Volume" Style="{StaticResource CardHeaderText}" />
+                            <TextBlock Text="{Binding [Volume.Title], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource CardHeaderText}" />
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -329,25 +343,25 @@
                                            Foreground="{DynamicResource Brush.TextPrimary}" />
                             </Grid>
                             <TextBlock Style="{StaticResource HintText}"
-                                       Text="Make files quieter or louder. 0 dB leaves volume unchanged." />
-                            <CheckBox Content="Normalize loudness (even out volume across files)"
+                                       Text="{Binding [Volume.Hint], Source={x:Static loc:LocalizationService.Instance}}" />
+                            <CheckBox Content="{Binding [Volume.Normalize], Source={x:Static loc:LocalizationService.Instance}}"
                                       IsChecked="{Binding NormalizeVolume}" Margin="0,12,0,0" />
                         </StackPanel>
                     </Border>
 
-                    <Border Style="{StaticResource Card}">
+                    <Border Style="{StaticResource InspectorCard}">
                         <StackPanel>
-                            <TextBlock Text="Clarity" Style="{StaticResource CardHeaderText}" />
-                            <CheckBox Content="Enhance clarity (reduce background noise, boost speech presence)"
+                            <TextBlock Text="{Binding [Clarity.Title], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource CardHeaderText}" />
+                            <CheckBox Content="{Binding [Clarity.Enable], Source={x:Static loc:LocalizationService.Instance}}"
                                       IsChecked="{Binding EnhanceClarity}" />
                             <TextBlock Style="{StaticResource HintText}"
-                                       Text="Good for recordings with hiss, hum, or muffled speech." />
+                                       Text="{Binding [Clarity.Hint], Source={x:Static loc:LocalizationService.Instance}}" />
                         </StackPanel>
                     </Border>
 
-                    <Border Style="{StaticResource Card}">
+                    <Border Style="{StaticResource InspectorCard}">
                         <StackPanel>
-                            <TextBlock Text="Playback speed" Style="{StaticResource CardHeaderText}" />
+                            <TextBlock Text="{Binding [Speed.Title], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource CardHeaderText}" />
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -360,13 +374,16 @@
                                            Foreground="{DynamicResource Brush.TextPrimary}" />
                             </Grid>
                             <TextBlock Style="{StaticResource HintText}"
-                                       Text="1.00x is normal speed. Below 1 is slower, above 1 is faster. Pitch stays natural." />
+                                       Text="{Binding [Speed.Hint], Source={x:Static loc:LocalizationService.Instance}}" />
                         </StackPanel>
                     </Border>
 
-                    <Border Style="{StaticResource Card}">
+                    <Border Style="{StaticResource InspectorCard}">
                         <StackPanel>
-                            <TextBlock Text="Silence padding" Style="{StaticResource CardHeaderText}" />
+                            <TextBlock Text="{Binding [Silence.Title], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource CardHeaderText}" />
+                            <CheckBox Content="{Binding [Silence.Trim], Source={x:Static loc:LocalizationService.Instance}}" IsChecked="{Binding TrimSilence}" />
+                            <TextBlock Style="{StaticResource HintText}" Text="{Binding [Silence.TrimHint], Source={x:Static loc:LocalizationService.Instance}}" Margin="0,0,0,12" />
+                            <TextBlock Text="{Binding [Silence.Padding], Source={x:Static loc:LocalizationService.Instance}}" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,8" />
                             <Grid Margin="0,0,0,10">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -379,7 +396,7 @@
                                            Foreground="{DynamicResource Brush.TextPrimary}" />
                             </Grid>
                             <TextBlock Style="{StaticResource HintText}"
-                                       Text="Adds quiet at the very start of each file. 0 means no lead-in." Margin="0,0,0,12" />
+                                       Text="{Binding [Silence.StartHint], Source={x:Static loc:LocalizationService.Instance}}" Margin="0,0,0,12" />
 
                             <Grid Margin="0,0,0,10">
                                 <Grid.ColumnDefinitions>
@@ -393,16 +410,16 @@
                                            Foreground="{DynamicResource Brush.TextPrimary}" />
                             </Grid>
                             <TextBlock Style="{StaticResource HintText}"
-                                       Text="Adds quiet at the very end of each file. Handy for podcast hosts or voicemail systems that want a beat before/after your voice." />
+                                       Text="{Binding [Silence.EndHint], Source={x:Static loc:LocalizationService.Instance}}" />
                         </StackPanel>
                     </Border>
 
-                    <Border Style="{StaticResource Card}">
+                    <Border Style="{StaticResource InspectorCard}">
                         <StackPanel>
-                            <TextBlock Text="Output file names" Style="{StaticResource CardHeaderText}" />
-                            <CheckBox Content="Use custom output file names"
+                            <TextBlock Text="{Binding [Names.Title], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource CardHeaderText}" />
+                            <CheckBox Content="{Binding [Names.Enable], Source={x:Static loc:LocalizationService.Instance}}"
                                       IsChecked="{Binding UseCustomFileNames}" Margin="0,0,0,10" />
-                            <TextBox Text="{Binding FileNamePattern, UpdateSourceTrigger=PropertyChanged}"
+                            <TextBox Text="{Binding FileNamePattern, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight"
                                      IsEnabled="{Binding UseCustomFileNames}"
                                      Margin="0,0,0,8" VerticalContentAlignment="Center" />
                             <Grid Margin="0,0,0,8" IsEnabled="{Binding UseCustomFileNames}">
@@ -410,65 +427,83 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="90" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="Start numbering at" VerticalAlignment="Center"
+                                <TextBlock Grid.Column="0" Text="{Binding [Names.Start], Source={x:Static loc:LocalizationService.Instance}}" VerticalAlignment="Center"
                                            Foreground="{DynamicResource Brush.TextSecondary}" FontSize="12" />
-                                <TextBox Grid.Column="1" Text="{Binding SequenceStart, UpdateSourceTrigger=PropertyChanged}"
+                                <TextBox Grid.Column="1" Text="{Binding SequenceStart, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight"
                                          Margin="8,0,0,0" VerticalContentAlignment="Center" />
                             </Grid>
-                            <TextBlock Text="{Binding FileNamePatternPreview, StringFormat=Preview: {0}}"
+                            <TextBlock Text="{Binding FileNamePatternPreview}"
                                        FontSize="12" FontWeight="SemiBold" Margin="0,0,0,8"
                                        Foreground="{DynamicResource Brush.Accent}" />
                             <TextBlock Style="{StaticResource HintText}"
-                                       Text="Use {name} for the original file name and {n}, {n2}, {n3}, or {n4} for a sequence number (e.g. 001). Example: Interview_{n3} becomes Interview_001, Interview_002, and so on." />
+                                       Text="{Binding [Names.Hint], Source={x:Static loc:LocalizationService.Instance}}" />
                         </StackPanel>
                     </Border>
 
-                    <Border Style="{StaticResource Card}">
+                    <Border Style="{StaticResource InspectorCard}">
                         <StackPanel>
-                            <TextBlock Text="Presets" Style="{StaticResource CardHeaderText}" />
-                            <ComboBox ItemsSource="{Binding Presets}" DisplayMemberPath="Name"
+                            <TextBlock Text="{Binding [Metadata.Title], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource CardHeaderText}" />
+                            <CheckBox Content="{Binding [Metadata.Enable], Source={x:Static loc:LocalizationService.Instance}}" IsChecked="{Binding WriteMetadata}" Margin="0,0,0,10" />
+                            <Grid IsEnabled="{Binding WriteMetadata}">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="70" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Text="{Binding [Metadata.TitleLabel], Source={x:Static loc:LocalizationService.Instance}}" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding MetadataTitle, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock Grid.Row="1" Text="{Binding [Metadata.Artist], Source={x:Static loc:LocalizationService.Instance}}" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding MetadataArtist, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock Grid.Row="2" Text="{Binding [Metadata.Album], Source={x:Static loc:LocalizationService.Instance}}" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding MetadataAlbum, UpdateSourceTrigger=PropertyChanged}" />
+                            </Grid>
+                            <TextBlock Style="{StaticResource HintText}" Text="{Binding [Metadata.Hint], Source={x:Static loc:LocalizationService.Instance}}" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource InspectorCard}">
+                        <StackPanel>
+                            <TextBlock Text="{Binding [Presets.Title], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource CardHeaderText}" />
+                            <ComboBox ItemsSource="{Binding Presets}" DisplayMemberPath="DisplayName"
                                       SelectedItem="{Binding SelectedPreset}" Margin="0,0,0,10" />
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                                 <TextBox Width="150" Text="{Binding NewPresetName, UpdateSourceTrigger=PropertyChanged}"
-                                         ToolTip="Name for a new preset" Margin="0,0,8,0" VerticalContentAlignment="Center" />
-                                <Button Content="Save Preset" Style="{StaticResource SecondaryButton}" Command="{Binding SavePresetCommand}" />
+                                         ToolTip="{Binding [Presets.Name], Source={x:Static loc:LocalizationService.Instance}}" Margin="0,0,8,0" VerticalContentAlignment="Center" />
+                                <Button Content="{Binding [Presets.Save], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource SecondaryButton}" Command="{Binding SavePresetCommand}" />
                             </StackPanel>
-                            <Button Content="Delete Selected Preset" Style="{StaticResource SecondaryButton}"
+                            <Button Content="{Binding [Presets.Delete], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource SecondaryButton}"
                                     HorizontalAlignment="Left" Command="{Binding DeletePresetCommand}" />
                             <TextBlock Style="{StaticResource HintText}"
-                                       Text="Save your current settings to reuse them next time, e.g. 'Podcast format' or 'Transcription standard'." />
+                                       Text="{Binding [Presets.Hint], Source={x:Static loc:LocalizationService.Instance}}" />
                         </StackPanel>
                     </Border>
 
                     <Border Style="{StaticResource Card}">
                         <StackPanel>
-                            <TextBlock Text="Output folder" Style="{StaticResource CardHeaderText}" />
+                            <TextBlock Text="{Binding [OutputFolder.Title], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource CardHeaderText}" />
                             <StackPanel Orientation="Horizontal">
-                                <TextBox Width="150" IsReadOnly="True" Text="{Binding OutputFolder, Mode=OneWay}"
+                                <TextBox Width="150" IsReadOnly="True" Text="{Binding OutputFolder, Mode=OneWay}" FlowDirection="LeftToRight"
                                          Margin="0,0,8,0" VerticalContentAlignment="Center" />
-                                <Button Content="Browse..." Style="{StaticResource SecondaryButton}" Command="{Binding BrowseOutputFolderCommand}" />
-                                <Button Content="Open" Style="{StaticResource SecondaryButton}" Click="OpenOutputFolder_Click" />
+                                <Button Content="{Binding [Browse], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource SecondaryButton}" Command="{Binding BrowseOutputFolderCommand}" />
+                                <Button Content="{Binding [Open], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource SecondaryButton}" Click="OpenOutputFolder_Click" />
                             </StackPanel>
                             <TextBlock Style="{StaticResource HintText}"
-                                       Text="Processed files are saved here. Your original files are never changed or moved." />
+                                       Text="{Binding [OutputFolder.Hint], Source={x:Static loc:LocalizationService.Instance}}" />
                         </StackPanel>
                     </Border>
 
                     <!-- Batch history: a running log of past runs so the user can check back later
                          on whether a batch actually finished and how many files failed. -->
-                    <Border Style="{StaticResource Card}" Margin="0">
+                    <Border Style="{StaticResource InspectorCard}" Margin="0">
                         <StackPanel>
                             <Grid Margin="0,0,0,10">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="Batch history" Style="{StaticResource CardHeaderText}" Margin="0" />
-                                <Button Grid.Column="1" Content="Clear" Style="{StaticResource SecondaryButton}"
+                                <TextBlock Grid.Column="0" Text="{Binding [History.Title], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource CardHeaderText}" Margin="0" />
+                                <Button Grid.Column="1" Content="{Binding [Clear], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource SecondaryButton}"
                                         Padding="10,5" Command="{Binding ClearHistoryCommand}" />
                             </Grid>
 
-                            <TextBlock Text="No batches finished yet in this session or a previous one."
+                            <TextBlock Text="{Binding [History.Empty], Source={x:Static loc:LocalizationService.Instance}}"
                                        Style="{StaticResource HintText}" Margin="0"
                                        Visibility="{Binding HasNoBatchHistory, Converter={StaticResource BoolToVis}}" />
 
@@ -506,12 +541,13 @@
                         </StackPanel>
                     </Border>
 
-                </StackPanel>
-            </ScrollViewer>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
         </Grid>
 
         <!-- Footer: progress + start/cancel -->
-        <Border Grid.Row="3" Style="{StaticResource Card}" Margin="4,16,4,0">
+        <Border Grid.Row="3" Style="{StaticResource CommandBar}" Margin="4,18,4,0">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -519,23 +555,20 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
-                    <ProgressBar Height="14" Minimum="0" Maximum="100" Value="{Binding OverallProgress, Mode=OneWay}" />
-                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                        <TextBlock Text="{Binding StatusText}" FontSize="12" TextTrimming="CharacterEllipsis"
-                                   Foreground="{DynamicResource Brush.TextSecondary}" />
-                        <TextBlock Text="{Binding EtaText}" FontSize="12" Margin="12,0,0,0"
-                                   Foreground="{DynamicResource Brush.TextSecondary}" />
-                    </StackPanel>
-                </StackPanel>
+                <ProgressBar Grid.Column="0" Height="10" Minimum="0" Maximum="100"
+                             Margin="0,0,16,0" VerticalAlignment="Center"
+                             Value="{Binding OverallProgress, Mode=OneWay}" />
 
-                <Button Grid.Column="1" Content="Cancel" Style="{StaticResource SecondaryButton}"
+                <Button Grid.Column="1" Content="{Binding [Cancel], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource SecondaryButton}"
                         Margin="0,0,8,0" Padding="16,11"
+                        VerticalAlignment="Center"
                         Command="{Binding CancelProcessingCommand}"
                         Visibility="{Binding IsProcessing, Converter={StaticResource BoolToVis}}" />
 
-                <Button Grid.Column="2" Content="Start Processing" Style="{StaticResource PrimaryButton}"
+                <Button Grid.Column="2" Content="{Binding [StartProcessing], Source={x:Static loc:LocalizationService.Instance}}" Style="{StaticResource PrimaryButton}"
+                        VerticalAlignment="Center" MinWidth="176" Height="44"
                         Command="{Binding StartProcessingCommand}" />
+
             </Grid>
         </Border>
 

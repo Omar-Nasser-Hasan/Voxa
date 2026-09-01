@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
+using Voxa.Services;
 
 namespace Voxa.Models
 {
@@ -115,13 +116,15 @@ namespace Voxa.Models
 
         public string StatusDisplay => Status switch
         {
-            ProcessingStatus.Pending => "Waiting",
-            ProcessingStatus.Processing => "Processing...",
-            ProcessingStatus.Success => "Done",
-            ProcessingStatus.Failed => "Failed",
-            ProcessingStatus.Skipped => "Skipped",
-            _ => "Unknown"
+            ProcessingStatus.Pending => LocalizationService.Instance["Status.Waiting"],
+            ProcessingStatus.Processing => LocalizationService.Instance["Status.Processing"],
+            ProcessingStatus.Success => LocalizationService.Instance["Status.Done"],
+            ProcessingStatus.Failed => LocalizationService.Instance["Status.Failed"],
+            ProcessingStatus.Skipped => LocalizationService.Instance["Status.Skipped"],
+            _ => LocalizationService.Instance["Status.Unknown"]
         };
+
+        public void RefreshLocalizedStatus() => OnPropertyChanged(nameof(StatusDisplay));
 
         public AudioFileItem(string filePath)
         {
